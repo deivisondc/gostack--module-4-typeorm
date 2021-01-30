@@ -38,13 +38,32 @@ class CreateOrderService {
     }
 
     const productsFiltered = await this.productsRepository.findAllById(products);
-    const productsFilteredDTO = productsFiltered.map(product => ({
-      product_id: product.id,
-      price: product.price,
-      quantity: product.quantity
-    }));
+
+    let updatedStockProducts: IProduct[] = [];
+
+    const productsFilteredDTO = products.map(product => {
+      const filtered = productsFiltered.find(f => f.id === product.id);
+
+      if (!filtered) {
+        throw new AppError(`Product ${product.id} does not exists.`);
+      }
+
+      if (filtered.quantity < product.quantity) {
+        throw new AppError(`Product ${product.id} only has ${filtered.quantity} in stock.`);
+      }
+
+      const updatedStockProduct = Object.assign({}, filtered, { quantity: filtered.quantity - product.quantity });
+      updatedStockProducts.push(updatedStockProduct);
+
+      return {
+        product_id: filtered.id,
+        price: filtered.price,
+        quantity: product.quantity
+      }
+    });
 
     const orders = this.ordersRepository.create({ customer, products: productsFilteredDTO });
+    this.productsRepository.updateQuantity(updatedStockProducts);
 
     return orders;
   }
