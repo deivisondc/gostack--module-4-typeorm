@@ -20,12 +20,15 @@ class Order {
   @Column()
   customer_id: string;
 
-  @ManyToOne(() => Customer)
+  @ManyToOne(() => Customer, {
+    eager: true,
+  })
   @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 
   @OneToMany(() => OrdersProducts, orderProduct => orderProduct.order, {
-    cascade: true
+    cascade: true,
+    eager: true,
   })
   order_products: OrdersProducts[];
 
