@@ -24,6 +24,7 @@ class Order {
   @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 
+  @OneToMany(() => OrdersProducts, orderProduct => orderProduct.order)
   order_products: OrdersProducts[];
 
   @CreateDateColumn()
