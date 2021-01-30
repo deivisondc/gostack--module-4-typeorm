@@ -23,7 +23,9 @@ export class AddProduct1612017176275 implements MigrationInterface {
               name: 'price',
               type: 'decimal',
               isNullable: false,
-              default: 0.00
+              default: 0.00,
+              precision: 8,
+              scale: 2,
             },
             {
               name: 'quantity',
